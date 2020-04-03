@@ -1,0 +1,116 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.google.protobuf' version '0.8.12'
+}
+
+repositories {
+    jcenter()
+}
+
+def String protobufVersion = '3.11.4'
+def String protocVersion = protobufVersion
+def String junitVersion = '4.12'
+/**
+ * Временная директория, куда генерируются proto
+ */
+def String pathGeneratedGrpcFiles = "${project.buildDir}/generated/source/proto"
+
+/**
+ * Название параметра командрой строки
+ * что бы сгенерировать новые proto классы (предыдущая директория будет удалена)
+ * gradle build -Pgen
+ */
+def String namePropForGenerationProtobuf = 'gen'
+
+/**
+ * Нужно ли генерировать классы из proto файлов
+ */
+def boolean isNeedGeneratedGrps = rootProject.hasProperty(namePropForGenerationProtobuf)
+
+
+
+dependencies {
+    implementation 'com.google.guava:guava:28.1-jre'
+    testImplementation "junit:junit:${junitVersion}"
+
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+    implementation 'io.grpc:grpc-netty-shaded:1.28.0'
+    implementation 'io.grpc:grpc-protobuf:1.28.0'
+    implementation 'io.grpc:grpc-stub:1.28.0'
+}
+
+application {
+    mainClassName = 'app.client.grpc.App'
+}
+
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'src/main/grpc']
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['test/java']
+        }
+    }
+}
+
+protobuf {
+    generatedFilesBaseDir = pathGeneratedGrpcFiles
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protocVersion}"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.28.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+
+task copyProtobuf(type: Copy, description: "Copies java class proto file") {
+    from "${pathGeneratedGrpcFiles}/main/grpc"
+    from "${pathGeneratedGrpcFiles}/main/java"
+    into "$projectDir/src/main/grpc"
+    finalizedBy('deleteProtobufBuildDir')
+}
+
+
+task deleteTargetDirProtobuf(type: Delete) {
+    delete "$projectDir/src/main/grpc"
+}
+
+task deleteProtobufBuildDir(type: Delete) {
+    delete pathGeneratedGrpcFiles
+}
+
+
+if (isNeedGeneratedGrps) {
+    build.finalizedBy(copyProtobuf)
+
+    tasks.all {
+        if (name == "generateProto") {
+            setEnabled(false)
+        }
+    }
+
+    compileJava.dependsOn('deleteTargetDirProtobuf')
+    compileJava.dependsOn(clean)
+}
+
+task printDependencies {
+    doLast {
+        tasks.all {
+            println("$name dependsOn $dependsOn")
+        }
+    }
+}
