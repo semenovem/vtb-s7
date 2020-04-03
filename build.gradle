@@ -97,14 +97,14 @@ task deleteProtobufBuildDir(type: Delete) {
 if (isNeedGeneratedGrps) {
     build.finalizedBy(copyProtobuf)
 
+    compileJava.dependsOn('deleteTargetDirProtobuf')
+    compileJava.dependsOn(clean)
+} else {
     tasks.all {
         if (name == "generateProto") {
             setEnabled(false)
         }
     }
-
-    compileJava.dependsOn('deleteTargetDirProtobuf')
-    compileJava.dependsOn(clean)
 }
 
 task printDependencies {
@@ -113,4 +113,8 @@ task printDependencies {
             println("$name dependsOn $dependsOn")
         }
     }
+}
+
+gradle.taskGraph.beforeTask { task ->
+    println(task.name)
 }
