@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option java_package = "ru.vtb.blockchain.client.mkb.grpc";
+//option java_outer_classname = "ConnectPoints";
+option java_multiple_files = true;
+
+import "authorizationRequest.proto";
+import "authorizationReply.proto";
+
+service Authorization {
+    rpc SayHello (AuthorizationRequest) returns (AuthorizationReply) {}
+}

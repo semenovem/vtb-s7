@@ -4,11 +4,14 @@
 package ru.vtb.blockchain.client.mkb;
 
 public class Application {
-    public String getGreeting() {
-        return "Hello world.";
-    }
-
     public static void main(String[] args) {
-        System.out.println(new Application().getGreeting());
+        ExchangeMsg exchangeMsg = new ExchangeMsg();
+        DaemonEnterText keyDaemon = new DaemonEnterText(new AdapterExchangeMsgToDaemonEnterText(exchangeMsg));
+
+        keyDaemon.start();
+
+        while (!keyDaemon.isExit) {
+            Thread.yield();
+        }
     }
 }

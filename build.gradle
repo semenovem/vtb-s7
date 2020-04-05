@@ -10,7 +10,7 @@ repositories {
 
 def String protobufVersion = '3.11.4'
 def String protocVersion = protobufVersion
-def String junitVersion = '4.12'
+def String junitVersion = '5.6.1'
 /**
  * Временная директория, куда генерируются proto
  */
@@ -23,7 +23,7 @@ def String nameParamGenerateJavaClassesOverProtobuf = 'grpc'
 
 /**
  * Название параметра командной строки для вывода названий тасков, которые проходит gradle
- * параметр для запуска из командной строки -PshowNameTasks
+ * параметр для запуска из командной строки -PshowTaskNames
  */
 def String nameParamShowTaskNames = 'showTaskNames'
 
@@ -31,15 +31,17 @@ def String nameParamShowTaskNames = 'showTaskNames'
 def boolean isNeedGeneratedGrps = rootProject.hasProperty(nameParamGenerateJavaClassesOverProtobuf)
 
 
-
 dependencies {
     implementation 'com.google.guava:guava:28.1-jre'
-    testImplementation "junit:junit:${junitVersion}"
+    testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
 
     implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
     implementation 'io.grpc:grpc-netty-shaded:1.28.0'
     implementation 'io.grpc:grpc-protobuf:1.28.0'
     implementation 'io.grpc:grpc-stub:1.28.0'
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.9'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 }
 
 application {
@@ -119,5 +121,12 @@ task printDependencies {
 if (rootProject.hasProperty(nameParamShowTaskNames)) {
     gradle.taskGraph.beforeTask { task ->
         println(task.name)
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
     }
 }
