@@ -4,6 +4,8 @@ logs
 
 .*
 
+*.hprof
+
 !.gitignore
 !.editorconfig
 !.gitattributes
