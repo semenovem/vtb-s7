@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vtb.blockchain.client.mkb.ExchangeMsg;
 
-public class Main {
+public class TestServer {
     public static final Logger logger = LoggerFactory.getLogger(ExchangeMsg.class);
 
     public static void main(String[] args) {

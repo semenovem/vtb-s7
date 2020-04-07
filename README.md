@@ -12,7 +12,7 @@
   
  --- 
 
-#### **Консоль `gragle`**
+#### **Консоль `gragle`** (пути указаны из корня проекта)
 Сгенерировать новые proto классы (предыдущая директория будет удалена) 
 `src/main/grpc` 
 важно - build в данном случае только для того, что бы получить новые java классы из proto файлов  
@@ -39,7 +39,12 @@ TODO исправить в рамках "улучшения разработки
   
   
 
-###### Запускает программу  
+###### Запускает программу (client)
 `java -jar build/libs/client-including-all-dependencies.jar`  
+
+
+###### Запускает тестовый сервер (testServer)
+`java -cp build/libs/client-including-all-dependencies.jar ru.vtb.blockchain.client.mkb.testServer.TestServer`  
+
 
  
