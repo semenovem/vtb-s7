@@ -1,4 +1,4 @@
-package ru.vtb.blockchain.client.mkb.server;
+package ru.vtb.blockchain.client.mkb.testServer;
 
 import java.io.IOException;
 import io.grpc.stub.StreamObserver;
@@ -64,6 +64,8 @@ public class WrapServer {
     static class AuthorizationImpl extends AuthorizationGrpc.AuthorizationImplBase {
         @Override
         public void sayHello(AuthorizationRequest request, StreamObserver<AuthorizationReply> responseObserver) {
+            logger.debug("Received field `name`" + request.getName());
+
             AuthorizationReply reply = AuthorizationReply.newBuilder().setMessage("Hello " + request.getName()).build();
             responseObserver.onNext(reply);
             responseObserver.onCompleted();

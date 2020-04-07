@@ -1,4 +1,4 @@
-package ru.vtb.blockchain.client.mkb.server;
+package ru.vtb.blockchain.client.mkb.testServer;
 
 import java.io.IOException;
 import org.slf4j.Logger;
