@@ -10,8 +10,8 @@ public class AdapterExchangeMsgToDaemonEnterText implements IHandlers {
     }
 
     @Override
-    public void stopWork() {
-        exchangeMsg.stopWork();
+    public void exit() {
+        exchangeMsg.exit();
     }
 
     @Override

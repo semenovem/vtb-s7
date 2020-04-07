@@ -5,6 +5,8 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
 import java.util.concurrent.TimeUnit;
+import ru.vtb.blockchain.IHandlerExit;
+import ru.vtb.blockchain.IHandlerTextInput;
 import ru.vtb.blockchain.client.mkb.grpc.AuthorizationGrpc;
 import ru.vtb.blockchain.client.mkb.grpc.AuthorizationRequest;
 import ru.vtb.blockchain.client.mkb.grpc.AuthorizationReply;
@@ -13,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ExchangeMsg implements IHandlerInputText, IHandlerExit {
+public class ExchangeMsg implements IHandlerTextInput, IHandlerExit {
     public static final Logger logger = LoggerFactory.getLogger(ExchangeMsg.class);
 
     private String target = "localhost:50051";
@@ -40,7 +42,7 @@ public class ExchangeMsg implements IHandlerInputText, IHandlerExit {
     }
 
     @Override
-    public void stopWork() {
+    public void exit() {
         logger.debug("stop work");
 
         try {

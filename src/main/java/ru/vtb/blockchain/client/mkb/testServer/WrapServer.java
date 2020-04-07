@@ -18,10 +18,9 @@ public class WrapServer {
     public static final Logger logger = LoggerFactory.getLogger(ExchangeMsg.class);
     Server server;
 
-    public WrapServer() throws IOException {
+    public WrapServer(int port) throws IOException {
         logger.info("start constructor for WrapServer");
 
-        int port = 50051;
         server = ServerBuilder.forPort(port)
             .addService(new AuthorizationImpl())
             .build()

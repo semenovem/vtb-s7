@@ -1,8 +1,8 @@
-package ru.vtb.blockchain.client.mkb;
+package ru.vtb.blockchain;
 
 /**
  * Обработчик выхода из приложения
  */
 public interface IHandlerExit {
-    void stopWork();
+    void exit();
 }
