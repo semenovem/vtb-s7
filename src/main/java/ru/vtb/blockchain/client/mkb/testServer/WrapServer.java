@@ -1,5 +1,12 @@
 package ru.vtb.blockchain.client.mkb.testServer;
 
+import io.netty.handler.ssl.ClientAuth;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslProvider;
+import io.netty.handler.ssl.ClientAuth;
+import io.grpc.netty.NettyServerBuilder;
+import io.grpc.netty.GrpcSslContexts;
+import java.io.File;
 import java.io.IOException;
 import io.grpc.stub.StreamObserver;
 import io.grpc.Server;
@@ -13,16 +20,23 @@ import ru.vtb.blockchain.client.mkb.grpc.AuthorizationGrpc;
 import ru.vtb.blockchain.client.mkb.grpc.AuthorizationRequest;
 import ru.vtb.blockchain.client.mkb.grpc.AuthorizationReply;
 
-
 public class WrapServer {
+    private final int port = 50051;
+    private final String certChainFilePath = "./server.pem";
+    private final String privateKeyFilePath = "./server.key";
+    private final String trustCertCollectionFilePath = "./ca.pem";
+
+
     public static final Logger logger = LoggerFactory.getLogger(ExchangeMsg.class);
     Server server;
 
     public WrapServer(int port) throws IOException {
         logger.info("start constructor for WrapServer");
 
-        server = ServerBuilder.forPort(port)
+
+        server = NettyServerBuilder.forPort(port)
             .addService(new AuthorizationImpl())
+            .sslContext(getSslContextBuilder().build())
             .build()
             .start();
 
@@ -41,6 +55,16 @@ public class WrapServer {
                 logger.error("*** server shut down");
             }
         });
+    }
+
+    private SslContextBuilder getSslContextBuilder() {
+        SslContextBuilder sslClientContextBuilder = SslContextBuilder.forServer(new File(certChainFilePath),
+            new File(privateKeyFilePath));
+
+        sslClientContextBuilder.trustManager(new File(trustCertCollectionFilePath));
+        sslClientContextBuilder.clientAuth(ClientAuth.REQUIRE);
+
+        return GrpcSslContexts.configure(sslClientContextBuilder);
     }
 
 

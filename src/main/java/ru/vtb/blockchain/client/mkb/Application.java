@@ -1,21 +1,22 @@
 package ru.vtb.blockchain.client.mkb;
 
 import java.security.KeyStoreException;
+import javax.net.ssl.SSLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Application {
     public static final Logger logger = LoggerFactory.getLogger(ExchangeMsg.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SSLException {
         ExchangeMsg exchangeMsg = new ExchangeMsg();
         DaemonEnterText keyDaemon = new DaemonEnterText(new AdapterExchangeMsgToDaemonEnterText(exchangeMsg));
 
-        try {
-            Encryption encryption = new Encryption();
-        } catch (KeyStoreException e) {
-            logger.error("failed init KeyStore. Message: {}", e.getMessage());
-        }
+//        try {
+//            Encryption encryption = new Encryption();
+//        } catch (KeyStoreException e) {
+//            logger.error("failed init KeyStore. Message: {}", e.getMessage());
+//        }
 
         keyDaemon.start();
 

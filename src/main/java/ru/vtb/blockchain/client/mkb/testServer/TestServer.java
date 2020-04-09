@@ -10,28 +10,12 @@ public class TestServer {
 
     public static final int defaultPort = 50051;
 
-    public static final int maxPort = 65535;
-
     public static void main(String[] args) {
         int port;
 
         if (args.length > 0) {
             try {
                 port = Integer.parseInt(args[0]);
-
-                if (port > maxPort) {
-                    logger.error("Specified port {} can't be more than {}", port, defaultPort);
-                    System.exit(1);
-                    return;
-                }
-
-                if (port < 0) {
-                    logger.error("Specified port {} can't be negative", port);
-                    System.exit(1);
-                    return;
-                }
-
-
             } catch (Exception e) {
                 port = defaultPort;
             }

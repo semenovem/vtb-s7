@@ -2,17 +2,11 @@
 
 # генерация сертификатов
 # todo сейчас скрипт переходит в директорию, куда должен записать сертификаты
-# сделать, что бы не преходил через `cd`. в -out передать полное имя с диреткорией назначения
+# сделать, что бы не преходил через `cd`. в -out передать полное имя с директорией назначения
 
 
-# ------------
-# конфирурации
-CLIENT_CONFIG="$ROOT_PATH/$SCRIPT_DIR_NAME/ca-openssl-client.conf"
-SERVER_CONFIG="$ROOT_PATH/$SCRIPT_DIR_NAME/ca-openssl-server.conf"
-
-#  директория с сертификатами (в корне проекта)
-CERT_DIR="/assets/sert"
-
+# директория с сертификатами (в корне проекта)
+CERT_DIR="/assets/cert"
 
 START_RATH=$(pwd)
 ROOT_PATH=''
@@ -35,8 +29,19 @@ then
     exit 1
 fi
 
-DIR="$ROOT_PATH/$CERT_DIR"
+# ------------
+# конфирурации
+path="$ROOT_PATH/assets/openssl-configurations"
 
+ILLEGAL_OPENSSL_CONF="$path/illegal-openssl.conf"
+CA_OPENSSL_CONF="$path/ca-openssl.conf"
+OPENSSL_CONF="$path/openssl.conf"
+CLIENT_OPENSSL_CONF="$path/client-openssl.conf"
+SERVER_OPENSSL_CONF="$path/server-openssl.conf"
+
+unset path
+
+DIR="$ROOT_PATH/$CERT_DIR"
 mkdir -p "$DIR"
 
 if ! [ -d "$DIR" ]
@@ -45,61 +50,59 @@ then
     exit
 fi
 
-# пока так - не нужны предыдущие файлы
 cd "$DIR" || exit
+# пока так - не нужны предыдущие файлы
 rm *
 
 
-# --------------
-# ca
+# для тестирования - с неразрешенным доступом
+# --------------------------
+#openssl req -x509 -newkey rsa:4096 -keyout badserver.key -out badserver.pem \
+#  -days 3650 -nodes -config "${ILLEGAL_OPENSSL_CONF}"
 
-openssl req -x509 -newkey rsa:4096 -keyout badserver.key -out badserver.pem \
-  -days 3650 -nodes -config "$CLIENT_CONFIG"
 
+
+# сертификат для разработки
+# --------------------------
 openssl req -x509 -new -newkey rsa:4096 -nodes -keyout ca.key -out ca.pem \
-  -config "$CLIENT_CONFIG" -days 365 -extensions v3_req
+  -config "${CA_OPENSSL_CONF}" -days 365 -extensions v3_req
 
 
+# client
+# --------------------------
 openssl genrsa -out client.key.rsa 4096
 openssl pkcs8 -topk8 -in client.key.rsa -out client.key -nocrypt
-openssl req -new -key client.key -out client.csr -config "$CLIENT_CONFIG"
+rm client.key.rsa
+openssl req -new -key client.key -out client.csr -config "${CLIENT_OPENSSL_CONF}"
 
 
+#openssl ca -in client.csr -out client.pem -keyfile ca.key -cert ca.pem -verbose -config "${OPENSSL_CONF}" -days 365 -updatedb
 openssl x509 -req -CA ca.pem -CAkey ca.key -CAcreateserial -in client.csr \
-  -out client.pem -days 365
+  -out client.pem -extensions v3_req -extfile "${CLIENT_OPENSSL_CONF}" -days 365
+
+
+#  server
+# --------------------------
+openssl genrsa -out server.key.rsa 4096
+openssl pkcs8 -topk8 -in server.key.rsa -out server.key -nocrypt
+#rm server.key.rsa
+openssl req -new -key server.key -out server.csr -config "${SERVER_OPENSSL_CONF}"
 
 
 
-
-#  server0 is issued by CA:
-# ------------------------
-
-openssl genrsa -out server0.key.rsa 4096
-openssl pkcs8 -topk8 -in server0.key.rsa -out server0.key -nocrypt
-openssl req -new -key server0.key -out server0.csr -config "$SERVER_CONFIG"
+#openssl ca -in server.csr -out server.pem -keyfile ca.key -cert ca.pem -verbose -config "${OPENSSL_CONF}" -days 365 -updatedb
+openssl x509 -req -CA ca.pem -CAkey ca.key -CAcreateserial -in server.csr \
+  -out server.pem -extensions v3_req -extfile "${SERVER_OPENSSL_CONF}" -days 365
 
 
-openssl x509 -req -CA ca.pem -CAkey ca.key -CAcreateserial -in server0.csr \
-  -out server0.pem -days 365
-
-
-#openssl genrsa -out server1.key.rsa 4096
-#openssl pkcs8 -topk8 -in server1.key.rsa -out server1.key -nocrypt
-#openssl req -new -key server1.key -out server1.csr -config "$SERVER_CONFIG"
-
-#openssl x509 -req -CA ca.pem -CAkey ca.key -CAcreateserial -in server1.csr \
-#  -out server1.pem -extensions req_ext -extfile server1-openssl.cnf -days 365
+# Clean up:
+# ---------
+ rm *.rsa
+ rm *.csr
+ rm ca.srl
 
 
 # shellcheck disable=SC2164
 cd "$START_RATH"
 exit
 
-
-
-
-# Clean up:
-# ---------
-# rm *.rsa
-# rm *.csr
-# rm ca.srl
