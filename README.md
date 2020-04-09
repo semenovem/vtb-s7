@@ -47,4 +47,8 @@ TODO исправить в рамках "улучшения разработки
 `java -cp build/libs/client-including-all-dependencies.jar ru.vtb.blockchain.client.mkb.testServer.TestServer`  
 
 
+###### Сгенерировать сертификаты
+> это bash скрипт   
+
+`bash dev-scripts/gen-cert.sh`
  
