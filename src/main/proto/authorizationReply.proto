@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option java_package = "ru.vtb.blockchain.client.mkb.grpc";
+option java_package = "ru.vtb.s7.client.mkb.grpc";
 //option java_outer_classname = "Authorization";
 option java_multiple_files = true;
 

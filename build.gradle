@@ -11,7 +11,6 @@ repositories {
 def String grpcVersion = '1.28.1'
 def String protobufVersion = '3.11.0'
 def String protocVersion = protobufVersion
-def String junitVersion = '5.6.1'
 def String nettyTcNativeVersion = '2.0.28.Final'
 
 /**
@@ -43,26 +42,31 @@ def boolean isNeedGeneratedGrps = rootProject.hasProperty(nameParamGrpc)
 
 dependencies {
     implementation 'com.google.guava:guava:28.1-jre'
-    testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
-
     implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
     implementation "io.grpc:grpc-netty:${grpcVersion}"
     implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
-    runtime "io.grpc:grpc-netty-shaded:${grpcVersion}"
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
     implementation "io.grpc:grpc-stub:${grpcVersion}"
-
-    compileOnly "javax.annotation:javax.annotation-api:1.2"
-
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.9'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
+    compileOnly "javax.annotation:javax.annotation-api:1.2"
+
     runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
     runtimeOnly "io.netty:netty-tcnative-boringssl-static:${nettyTcNativeVersion}"
+
+//    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.2"
+    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
+    testImplementation "org.mockito:mockito-core:2.28.2" // 3.3.3
+
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.6.2"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.2"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.6.2"
 }
 
 application {
-    mainClassName = 'ru.vtb.blockchain.client.mkb.Application'
+    mainClassName = 'ru.vtb.s7.client.mkb.Application'
 }
 
 
@@ -75,7 +79,7 @@ sourceSets {
 
     test {
         java {
-            srcDirs = ['test/java']
+            srcDirs = ['src/test/java']
         }
     }
 }

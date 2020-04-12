@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_package = "ru.vtb.s7.client.mkb.grpc";
+//option java_outer_classname = "Client";
+option java_multiple_files = true;
+
+
+// новый клиент
+message ClientNewRequest {
+    string name = 2;
+}
+
+message ClientNewReply {
+    string status = 1;
+    string id = 2;
+    string msg = 3;
+}
+
+// добавить клиенту пропс
+message ClientAddInnRequest {
+    string idClient = 1;
+    string inn = 2;
+}
+
+message ClientAddInnReply {
+    string status = 1;
+    string inn = 2;
+}
+
+service Client {
+    rpc CreateNew (ClientNewRequest) returns (ClientNewReply) {}
+    rpc AddInn (ClientNewRequest) returns (ClientNewReply) {}
+}
+
+

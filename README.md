@@ -44,7 +44,7 @@ TODO исправить в рамках "улучшения разработки
 
 
 ###### Запускает тестовый сервер (testServer)
-`java -cp build/libs/client-including-all-dependencies.jar ru.vtb.blockchain.client.mkb.testServer.TestServer`  
+`java -cp build/libs/client-including-all-dependencies.jar TestServer`  
 
 
 ###### Сгенерировать сертификаты
