@@ -19,12 +19,12 @@ public class DaemonEnterText extends Thread {
 
     public DaemonEnterText(IHandlers handlers) {
         this.handlers = handlers;
-        super.setDaemon(true);
+//        super.setDaemon(true);
     }
 
     @Override
     public void run() {
-        super.run();
+//        super.run();
 
         try {
             startWork();

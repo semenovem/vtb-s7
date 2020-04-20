@@ -5,31 +5,16 @@ option java_package = "ru.vtb.s7.client.mkb.grpc";
 option java_multiple_files = true;
 
 
-// новый клиент
-message ClientNewRequest {
-    string name = 2;
+// Отправка данных на обработку мбанк
+message ProcessingRequest {
+    string XMLMessage = 1;
 }
 
-message ClientNewReply {
-    string status = 1;
-    string id = 2;
-    string msg = 3;
+// Результат обработки XML в мбнке
+message ProcessingReply {
+    string XMLMessage = 1;
 }
 
-// добавить клиенту пропс
-message ClientAddInnRequest {
-    string idClient = 1;
-    string inn = 2;
+service MBank {
+    rpc XMLProcessing (ProcessingRequest) returns (ProcessingReply) {}
 }
-
-message ClientAddInnReply {
-    string status = 1;
-    string inn = 2;
-}
-
-service Client {
-    rpc CreateNew (ClientNewRequest) returns (ClientNewReply) {}
-    rpc AddInn (ClientNewRequest) returns (ClientNewReply) {}
-}
-
-

@@ -12,12 +12,17 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vtb.s7.client.mkb.ExchangeMsg;
-import ru.vtb.s7.client.mkb.grpc.AuthorizationGrpc;
-import ru.vtb.s7.client.mkb.grpc.AuthorizationRequest;
-import ru.vtb.s7.client.mkb.grpc.AuthorizationReply;
+//import ru.vtb.s7.client.mkb.grpc.AuthorizationGrpc;
+//import ru.vtb.s7.client.mkb.grpc.AuthorizationRequest;
+//import ru.vtb.s7.client.mkb.grpc.AuthorizationReply;
+
+// импорт из пакета
+import ru.vtb.grpc.mbank.adapter.RegistryGrpc;
+import ru.vtb.grpc.mbank.adapter.AccountRequest;
+import ru.vtb.grpc.mbank.adapter.AccountReply;
 
 public class MsgExchange {
-    public static final Logger logger = LoggerFactory.getLogger(ExchangeMsg.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExchangeMsg.class);
 
     private final Credential credential;
 
@@ -29,7 +34,7 @@ public class MsgExchange {
         logger.debug("start constructor for WrapServer");
 
         server = NettyServerBuilder.forPort(port)
-            .addService(new AuthorizationImpl())
+            .addService(new RegistryImpl())
             .sslContext(getSslContextBuilder().build())
             .build()
             .start();
@@ -79,12 +84,16 @@ public class MsgExchange {
         }
     }
 
-    static class AuthorizationImpl extends AuthorizationGrpc.AuthorizationImplBase {
+    static class RegistryImpl extends RegistryGrpc.RegistryImplBase {
         @Override
-        public void sayHello(AuthorizationRequest request, StreamObserver<AuthorizationReply> responseObserver) {
+        public void getAccount(AccountRequest request, StreamObserver<AccountReply> responseObserver) {
             logger.debug("Received field `name`" + request.getName());
 
-            AuthorizationReply reply = AuthorizationReply.newBuilder().setMessage("Hello " + request.getName()).build();
+            System.out.println("");
+            System.out.println("Received field `name`" + request.getName());
+            System.out.println("");
+
+            AccountReply reply = AccountReply.newBuilder().setMessage("Hello " + request.getName()).build();
             responseObserver.onNext(reply);
             responseObserver.onCompleted();
         }

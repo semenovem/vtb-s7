@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # скрипт для запуска билда
-# не отновиситься к программе
+# не относится к программе
 
 clear
 
 #bash dev-scripts/gen-cert.sh
-gradle clean build
+./gradlew clean build
 
 cp assets/cert/* build/libs/
 

@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.google.protobuf' version '0.8.12'
+//    id 'com.google.protobuf' version '0.8.12'
 }
 
 repositories {
@@ -42,21 +42,26 @@ def boolean isNeedGeneratedGrps = rootProject.hasProperty(nameParamGrpc)
 
 dependencies {
     implementation 'com.google.guava:guava:28.1-jre'
-    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
-    implementation "io.grpc:grpc-netty:${grpcVersion}"
-    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
-    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
-    implementation "io.grpc:grpc-stub:${grpcVersion}"
+//    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+//    implementation "io.grpc:grpc-netty:${grpcVersion}"
+//    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+//    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+//    implementation "io.grpc:grpc-stub:${grpcVersion}"
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.9'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
+    implementation files('libs/grpc-0.0.0.jar')
+
     compileOnly "javax.annotation:javax.annotation-api:1.2"
 
-    runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
+//    runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
     runtimeOnly "io.netty:netty-tcnative-boringssl-static:${nettyTcNativeVersion}"
 
 //    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.2"
+
+
+    // если тесты будут в grpc, зависимость будет там
     testImplementation "io.grpc:grpc-testing:${grpcVersion}"
     testImplementation "org.mockito:mockito-core:2.28.2" // 3.3.3
 
@@ -103,53 +108,54 @@ jar {
     }
 }
 
-protobuf {
-    generatedFilesBaseDir = pathGeneratedGrpcFiles
-    protoc {
-        artifact = "com.google.protobuf:protoc:${protocVersion}"
-    }
-    plugins {
-        grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.28.0'
-        }
-    }
-    generateProtoTasks {
-        all()*.plugins {
-            grpc {}
-        }
-    }
-}
+// импорт из пакета файлов proto
+//protobuf {
+//    generatedFilesBaseDir = pathGeneratedGrpcFiles
+//    protoc {
+//        artifact = "com.google.protobuf:protoc:${protocVersion}"
+//    }
+//    plugins {
+//        grpc {
+//            artifact = 'io.grpc:protoc-gen-grpc-java:1.28.0'
+//        }
+//    }
+//    generateProtoTasks {
+//        all()*.plugins {
+//            grpc {}
+//        }
+//    }
+//}
 
 
-task copyProtobuf(type: Copy, description: "Copies java class proto file") {
-    from "${pathGeneratedGrpcFiles}/main/grpc"
-    from "${pathGeneratedGrpcFiles}/main/java"
-    into "$projectDir/src/main/grpc"
-    finalizedBy('deleteProtobufBuildDir')
-}
+//task copyProtobuf(type: Copy, description: "Copies java class proto file") {
+//    from "${pathGeneratedGrpcFiles}/main/grpc"
+//    from "${pathGeneratedGrpcFiles}/main/java"
+//    into "$projectDir/src/main/grpc"
+//    finalizedBy('deleteProtobufBuildDir')
+//}
 
 
-task deleteTargetDirProtobuf(type: Delete) {
-    delete "$projectDir/src/main/grpc"
-}
+//task deleteTargetDirProtobuf(type: Delete) {
+//    delete "$projectDir/src/main/grpc"
+//}
+//
+//task deleteProtobufBuildDir(type: Delete) {
+//    delete pathGeneratedGrpcFiles
+//}
 
-task deleteProtobufBuildDir(type: Delete) {
-    delete pathGeneratedGrpcFiles
-}
 
-
-if (isNeedGeneratedGrps) {
-    build.finalizedBy(copyProtobuf)
-
-    compileJava.dependsOn('deleteTargetDirProtobuf')
-    compileJava.dependsOn(clean)
-} else {
-    tasks.all {
-        if (name == "generateProto") {
-            setEnabled(false)
-        }
-    }
-}
+//if (isNeedGeneratedGrps) {
+//    build.finalizedBy(copyProtobuf)
+//
+//    compileJava.dependsOn('deleteTargetDirProtobuf')
+//    compileJava.dependsOn(clean)
+//} else {
+//    tasks.all {
+//        if (name == "generateProto") {
+//            setEnabled(false)
+//        }
+//    }
+//}
 
 task printDependencies {
     doLast {

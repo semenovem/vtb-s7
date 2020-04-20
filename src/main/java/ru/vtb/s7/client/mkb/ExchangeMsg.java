@@ -6,9 +6,14 @@ import io.grpc.StatusRuntimeException;
 import java.util.concurrent.TimeUnit;
 import ru.vtb.s7.IHandlerExit;
 import ru.vtb.s7.IHandlerTextInput;
-import ru.vtb.s7.client.mkb.grpc.AuthorizationGrpc;
-import ru.vtb.s7.client.mkb.grpc.AuthorizationRequest;
-import ru.vtb.s7.client.mkb.grpc.AuthorizationReply;
+//import ru.vtb.s7.client.mkb.grpc.AuthorizationGrpc;
+//import ru.vtb.s7.client.mkb.grpc.AuthorizationRequest;
+//import ru.vtb.s7.client.mkb.grpc.AuthorizationReply;
+
+// импорт из пакета
+import ru.vtb.grpc.mbank.adapter.RegistryGrpc;
+import ru.vtb.grpc.mbank.adapter.AccountRequest;
+import ru.vtb.grpc.mbank.adapter.AccountReply;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +35,9 @@ public class ExchangeMsg implements IHandlerTextInput, IHandlerExit {
 
     public static final Logger logger = LoggerFactory.getLogger(ExchangeMsg.class);
 
-    ManagedChannel channel;
+    private final ManagedChannel channel;
 
-    private final AuthorizationGrpc.AuthorizationBlockingStub blockingStub;
+    private final RegistryGrpc.RegistryBlockingStub blockingStub;
 
     ExchangeMsg() throws SSLException {
         logger.debug("Start client");
@@ -48,12 +53,12 @@ public class ExchangeMsg implements IHandlerTextInput, IHandlerExit {
 //            .usePlaintext()
 //            .build();
 
-        blockingStub = AuthorizationGrpc.newBlockingStub(channel);
+        blockingStub = RegistryGrpc.newBlockingStub(channel);
     }
 
     ExchangeMsg(ManagedChannel channel) {
         this.channel = channel;
-        blockingStub = AuthorizationGrpc.newBlockingStub(channel);
+        blockingStub = RegistryGrpc.newBlockingStub(channel);
     }
 
     @Override
@@ -90,10 +95,11 @@ public class ExchangeMsg implements IHandlerTextInput, IHandlerExit {
 
 
     void greet(String name) {
-        AuthorizationRequest request = AuthorizationRequest.newBuilder().setName(name).build();
-        AuthorizationReply response;
+        AccountRequest request = AccountRequest.newBuilder().setName(name).build();
+        AccountReply response;
+
         try {
-            response = blockingStub.sayHello(request);
+            response = blockingStub.getAccount(request);
         } catch (StatusRuntimeException e) {
             System.out.println(e.getStatus());
             return;
